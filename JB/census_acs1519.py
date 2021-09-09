@@ -1,3 +1,12 @@
+# census_acs1519.py
+# collects data from census ACS, using Census APIs, for use in CareerOneStop's Available Workforce, Area Profile
+# 50 states plus DC and PR, plus counties, plus metro areas (but not micro areas)
+# Some data we want is "DT", some is "DP", from the perspective of the Census -- different APIs.
+# The "year" we want is 2015-2019. They don't call it the average, but something like that. 
+# Further, some of the PR data is part of the mainstream data, while some needs a PR-specific API call.
+# 
+# I welcome ideas for improvement! Jamie Buss, jamie.buss@xpandcorp.com
+
 if __name__ == '__main__':
 
     #===== DP STATE data ========================
@@ -130,9 +139,7 @@ if __name__ == '__main__':
     # so it matches final product, fill it out
     #  assign stfips value to new column acs_geo_id2.
     #  This will be complicated. It's not in the data from census. Have to do some string manipulation to find 2-char state, then lookup STFIPS
-    #mergemetros.insert(1, "acs_geo_id2", "needed")
     mergemetros.insert(1, "acs_geo_id2", mergemetros['areacode'])
-    #mergemetros.insert(17, "stfips", "needed")
     Rside = mergemetros['areaname_unused'].str.split(', ').str[1]
     mergemetros.insert(17, "ABBREV", Rside.str[:2])
     stfipstb = pd.read_csv('stfipstb.csv')
@@ -140,7 +147,7 @@ if __name__ == '__main__':
     mergedf.drop(['STNAME', 'ABBREV'], axis=1, inplace=True)
     mergedf.rename(columns={"STFIPS": "stfips"}, inplace=True)
     mergemetros = mergedf
-    # assign constant state type id. Future improvement:  force this to be string, len 2.
+    # assign constant state type id. 
     mergemetros.insert(3, "areatype", "21")
 
     #mergemetros.to_csv("DPMetros.csv")
